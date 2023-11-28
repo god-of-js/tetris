@@ -21,21 +21,21 @@ const shapes = ref(['triangle', 'rectangle', 'square'])
 
 <style>
 .triangle {
-  border-bottom: 30px solid blue;
-  border-right: 30px solid transparent;
+  border-bottom: 60px solid blue;
+  border-right: 60px solid transparent;
   width: 0;
   height: 0;
 }
 
 .rectangle {
-  height: 60px;
-  width: 30px;
+  height: 120px;
+  width: 60px;
   background: red;
 }
 
 .square {
-  width: 30px;
-  height: 30px;
+  width: 60px;
+  height: 60px;
   background: yellow;
 }
 </style>

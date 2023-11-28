@@ -33,9 +33,11 @@ function receiveShape(event: DragEvent, yIndex: number, xIndex: number) {
     alert('Not a valid shape')
     return
   }
-  // TODO: handle adding shape when last item has not landed
-
-  stack.value.push({ shape, xPosition: xIndex, yPosition: yIndex, rotationLevel: 0, hasLanded: false })
+  if (!!stack.value[stack.value.length - 1] && !stack.value[stack.value.length - 1]?.hasLanded) {
+    alert('The last item needs to land before we proceed')
+    return
+  }
+  stack.value.push({ shape, xPosition: xIndex, yPosition: yIndex, rotationLevel: 0, hasLanded: false, verticalSpace: shape === 'rectangle' ? 2 : 1 })
 
   if (prevYIndex && prevXIndex)
     removeShape(Number(prevXIndex), Number(prevYIndex))
@@ -70,7 +72,10 @@ function moveItemOneStepDown() {
     element.hasLanded = true
   else element.yPosition += 1
 
-  if (element.yPosition === numOfYCells - 1 || element.hasLanded) {
+  if (
+    element.yPosition === numOfYCells - 1
+    || (element.verticalSpace === 2 && element.yPosition === numOfYCells - 2 && element.rotationLevel === 0)
+    || element.hasLanded) {
     clearInterval(interval)
     element.hasLanded = true
   }
@@ -118,7 +123,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div id="board" class="board grid bg-gray-50">
+  <div class="grid bg-gray-50">
     <div v-for="(row, yIndex) in arena" :key="yIndex" class="grid grid-cols-9">
       <div
         v-for="(_, xIndex) in row"
@@ -141,7 +146,9 @@ onMounted(() => {
 
 <style scoped>
 .shape-cell {
-  width: 30px;
-  height: 30px;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: flex-start;
 }
 </style>
