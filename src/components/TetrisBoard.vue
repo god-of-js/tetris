@@ -15,8 +15,19 @@ const cells = Array.from({ length: numOfYCells }).fill(Array.from({ length: numO
 const arena = ref(cells)
 const stack = ref<Shape[]>([])
 
-function onDrop(event: DragEvent) {
+function startDrag(event: DragEvent, shape: string, xIndex: number, yIndex: number) {
+  if (!event.dataTransfer)
+    return
+  event.dataTransfer.dropEffect = 'move'
+  event.dataTransfer.effectAllowed = 'move'
+  event.dataTransfer.setData('shape', shape)
+  event.dataTransfer.setData('xIndex', `${xIndex}`)
+  event.dataTransfer.setData('yIndex', `${yIndex}`)
+}
+function receiveShape(event: DragEvent, yIndex: number, xIndex: number) {
   const shape = event.dataTransfer?.getData('shape')
+  const prevXIndex = event.dataTransfer?.getData('xIndex')
+  const prevYIndex = event.dataTransfer?.getData('yIndex')
   if (!shape) {
     // eslint-disable-next-line no-alert
     alert('Not a valid shape')
@@ -24,10 +35,15 @@ function onDrop(event: DragEvent) {
   }
   // TODO: handle adding shape when last item has not landed
 
-  // Adding the shape to the center top.
-  stack.value.push({ shape, xPosition: 4, yPosition: 0, rotationLevel: 0, hasLanded: false })
+  stack.value.push({ shape, xPosition: xIndex, yPosition: yIndex, rotationLevel: 0, hasLanded: false })
+
+  if (prevYIndex && prevXIndex)
+    removeShape(Number(prevXIndex), Number(prevYIndex))
 }
 
+function removeShape(xIndex: number, yIndex: number) {
+  stack.value = stack.value.filter(item => !(item.xPosition === xIndex && item.yPosition === yIndex))
+}
 function getShapeInColumn(xPos: number, yPos: number) {
   return stack.value.find(item => item.xPosition === xPos && item.yPosition === yPos)
 }
@@ -45,24 +61,25 @@ let interval: NodeJS.Timer | undefined
 /**
  * Handle down movement
  * */
-function landLastShape() {
+function moveItemOneStepDown() {
   const elementIndex = stack.value.length - 1
   const element = stack.value[elementIndex]
   const itemInNextColumnExists = !!getShapeInColumn(element?.xPosition, element?.yPosition + 1)
 
   if (itemInNextColumnExists)
-    stack.value[elementIndex + 1].hasLanded = true
-  else stack.value[elementIndex].yPosition += 1
+    element.hasLanded = true
+  else element.yPosition += 1
 
-  if (stack.value[elementIndex].yPosition === numOfYCells - 1 || stack.value[elementIndex].hasLanded) {
+  if (element.yPosition === numOfYCells - 1 || element.hasLanded) {
     clearInterval(interval)
-    stack.value[elementIndex].hasLanded = true
+    element.hasLanded = true
   }
 }
+
 watch(() => stack.value[stack.value.length - 1], (source) => {
   if (!source.hasLanded) {
     // Set the interval initially
-    interval = setInterval(landLastShape, 1000)
+    interval = setInterval(moveItemOneStepDown, 1000)
   }
 })
 
@@ -70,10 +87,15 @@ function changeRotation(nextRotation: 1 | -1) {
   const elementIndex = stack.value.length - 1
   const element = stack.value[elementIndex]
 
-  if (element.hasLanded || element.rotationLevel > 3)
+  if (element.hasLanded)
     return
 
-  stack.value[elementIndex].rotationLevel += nextRotation
+  if (element.rotationLevel >= 3 && nextRotation === 1)
+    element.rotationLevel = 0
+  else if (element.rotationLevel === 0 && nextRotation === -1)
+    element.rotationLevel = 3
+  else
+    element.rotationLevel += nextRotation
 }
 
 function initKeyboardControls() {
@@ -89,17 +111,37 @@ function initKeyboardControls() {
       changeRotation(-1)
   })
 }
+
 onMounted(() => {
   initKeyboardControls()
 })
 </script>
 
 <template>
-  <div id="board" class="board grid bg-gray-50" @drop="onDrop" @dragover.prevent @dragenter.prevent>
+  <div id="board" class="board grid bg-gray-50">
     <div v-for="(row, yIndex) in arena" :key="yIndex" class="grid grid-cols-9">
-      <div v-for="(_, xIndex) in row" :key="xIndex" class="flex items-center justify-center gap-4 border">
-        <div v-if="getShapeInColumn(xIndex, yIndex)" :class="getShapeInColumn(xIndex, yIndex)?.shape" />
+      <div
+        v-for="(_, xIndex) in row"
+        :key="xIndex" class="shape-cell flex items-center justify-center gap-4 border"
+        @drop="(e) => receiveShape(e, yIndex, xIndex)"
+        @dragover.prevent
+        @dragenter.prevent
+      >
+        <div
+          v-if="getShapeInColumn(xIndex, yIndex)"
+          draggable="true"
+          :class="getShapeInColumn(xIndex, yIndex)?.shape"
+          :style="`transform: rotate(${getShapeInColumn(xIndex, yIndex)!.rotationLevel * 90}deg);`"
+          @dragstart="startDrag($event, getShapeInColumn(xIndex, yIndex)?.shape!, xIndex, yIndex)"
+        />
       </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+.shape-cell {
+  width: 30px;
+  height: 30px;
+}
+</style>

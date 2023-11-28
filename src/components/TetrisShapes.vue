@@ -1,5 +1,8 @@
 <script setup lang="ts">
-const shapes = ref(['triangle', 'rectangle', 'square'])
+interface Props {
+  shapes: string[]
+}
+const props = defineProps<Props>()
 
 function startDrag(event: DragEvent, shape: string) {
   if (!event.dataTransfer)
@@ -15,6 +18,6 @@ function startDrag(event: DragEvent, shape: string) {
     <TheButton class="h-fit">
       Clear
     </TheButton>
-    <div v-for="shape in shapes" :key="shape" :class="shape" draggable="true" @dragstart="startDrag($event, shape)" />
+    <div v-for="shape in props.shapes" :key="shape" :class="shape" draggable="true" @dragstart="startDrag($event, shape)" />
   </div>
 </template>

@@ -2,6 +2,8 @@
 defineOptions({
   name: 'IndexPage',
 })
+
+const shapes = ref(['triangle', 'rectangle', 'square'])
 </script>
 
 <template>
@@ -11,7 +13,7 @@ defineOptions({
       <span>Tetris</span>
     </div>
     <div class="mx-auto flex flex-col gap-8 md:flex-row">
-      <TetrisShapes />
+      <TetrisShapes :shapes="shapes" />
       <TetrisBoard />
     </div>
   </div>
@@ -35,12 +37,5 @@ defineOptions({
   width: 30px;
   height: 30px;
   background: yellow;
-}
-/* TODO: style board to look prettier */
-.board {
-  width: 600px;
-  height: 400px;
-  display: flex;
-  flex-wrap: wrap;
 }
 </style>
