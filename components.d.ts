@@ -19,6 +19,8 @@ declare module '@vue/runtime-core' {
     RegistrationForm: typeof import('./src/components/steps/RegistrationForm.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    TetrisBoard: typeof import('./src/components/TetrisBoard.vue')['default']
+    TetrisShapes: typeof import('./src/components/TetrisShapes.vue')['default']
     TheAlert: typeof import('./src/components/TheAlert.vue')['default']
     TheButton: typeof import('./src/components/TheButton.vue')['default']
     TheCounter: typeof import('./src/components/TheCounter.vue')['default']
