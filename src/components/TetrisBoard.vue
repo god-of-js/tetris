@@ -5,8 +5,8 @@ interface Shape {
   xPosition: number
   rotationLevel: number
   hasLanded: boolean
-  verticalSpace?: number
-  horizontalSpace?: number
+  verticalSpace: number
+  horizontalSpace: number
 }
 const numOfYCells = 9
 const numOfXCells = 9
@@ -36,13 +36,22 @@ function receiveShape(event: DragEvent, yIndex: number, xIndex: number) {
     alert('The last item needs to land before we proceed')
     return
   }
-  stack.value.push({ shape, xPosition: xIndex, yPosition: yIndex, rotationLevel: 0, hasLanded: false, verticalSpace: shape === 'rectangle' ? 2 : 1 })
+  stack.value.push({
+    shape,
+    xPosition: xIndex,
+    yPosition: yIndex,
+    rotationLevel: 0,
+    hasLanded: false,
+    verticalSpace: shape === 'rectangle' ? 2 : 1,
+    // TODO: check if this variable is needed
+    horizontalSpace: shape === 'rectangle' ? 2 : 1,
+  })
 
   if (prevYIndex && prevXIndex)
-    removeShape(Number(prevXIndex), Number(prevYIndex))
+    removeShapeFromStack(Number(prevXIndex), Number(prevYIndex))
 }
 
-function removeShape(xIndex: number, yIndex: number) {
+function removeShapeFromStack(xIndex: number, yIndex: number) {
   stack.value = stack.value.filter(item => !(item.xPosition === xIndex && item.yPosition === yIndex))
 }
 function getShapeInColumn(xPos: number, yPos: number) {
@@ -63,18 +72,13 @@ function moveItemOneStepDown() {
   const elementIndex = stack.value.length - 1
   const element = stack.value[elementIndex]
   const itemInNextColumnExists = !!getShapeInColumn(element?.xPosition, element?.yPosition + 1)
+  const elementHasReachedItsEnd = element.yPosition >= numOfYCells - element.verticalSpace
 
-  if (itemInNextColumnExists)
-    element.hasLanded = true
-  else element.yPosition += 1
-
-  if (
-    element.yPosition === numOfYCells - 1
-    || (element.verticalSpace === 2 && element.yPosition === numOfYCells - 2 && element.rotationLevel === 0)
-    || element.hasLanded) {
+  if (elementHasReachedItsEnd || itemInNextColumnExists || element.hasLanded) {
     clearInterval(interval)
     element.hasLanded = true
   }
+  else { element.yPosition += 1 }
 }
 
 watch(() => stack.value[stack.value.length - 1], (source) => {
@@ -88,7 +92,7 @@ function changeRotation(nextRotation: 1 | -1) {
 
   if (element.hasLanded)
     return
-
+  // Restart rotation if it has reached it's end
   if (element.rotationLevel >= 3 && nextRotation === 1)
     element.rotationLevel = 0
   else if (element.rotationLevel === 0 && nextRotation === -1)
@@ -132,7 +136,9 @@ onMounted(() => {
           :class="getShapeInColumn(xIndex, yIndex)?.shape"
           :style="`transform: rotate(${getShapeInColumn(xIndex, yIndex)!.rotationLevel * 90}deg);`"
           @dragstart="startDrag($event, getShapeInColumn(xIndex, yIndex)?.shape!, xIndex, yIndex)"
-        />
+        >
+          {{ yIndex }}
+        </div>
       </div>
     </div>
   </div>
