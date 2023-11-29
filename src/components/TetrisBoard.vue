@@ -59,9 +59,6 @@ function changeItemHorizontalPosition(next: 1 | -1) {
 }
 
 let interval: NodeJS.Timer | undefined
-/**
- * Handle down movement
- * */
 function moveItemOneStepDown() {
   const elementIndex = stack.value.length - 1
   const element = stack.value[elementIndex]
@@ -81,10 +78,8 @@ function moveItemOneStepDown() {
 }
 
 watch(() => stack.value[stack.value.length - 1], (source) => {
-  if (!source.hasLanded) {
-    // Set the interval initially
+  if (!source.hasLanded)
     interval = setInterval(moveItemOneStepDown, 1000)
-  }
 })
 
 function changeRotation(nextRotation: 1 | -1) {
