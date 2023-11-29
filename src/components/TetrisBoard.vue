@@ -149,9 +149,7 @@ onMounted(() => {
           ]"
           :style="`transform: rotate(${getShapeInColumn(xIndex, yIndex)!.rotationLevel * 90}deg);`"
           @dragstart="startDrag($event, getShapeInColumn(xIndex, yIndex)?.shape!, xIndex, yIndex)"
-        >
-          {{ xIndex }}
-        </div>
+        />
       </div>
     </div>
   </div>
