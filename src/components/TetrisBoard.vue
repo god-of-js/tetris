@@ -1,4 +1,7 @@
 <script setup lang="ts">
+interface Props {
+  shapes: string[]
+}
 interface Shape {
   shape: string
   yPosition: number
@@ -8,6 +11,8 @@ interface Shape {
   verticalSpace: number
   horizontalSpace: number
 }
+
+const props = defineProps<Props>()
 const numOfYCells = 9
 const numOfXCells = 9
 const cells = Array.from({ length: numOfYCells }).fill(Array.from({ length: numOfXCells }).fill(0))
@@ -27,7 +32,7 @@ function receiveShape(event: DragEvent, yIndex: number, xIndex: number) {
   const shape = event.dataTransfer?.getData('shape')
   const prevXIndex = event.dataTransfer?.getData('xIndex')
   const prevYIndex = event.dataTransfer?.getData('yIndex')
-  if (!shape) {
+  if (!shape || !props.shapes.includes(shape)) {
     // eslint-disable-next-line no-alert
     alert('Not a valid shape')
     return
@@ -72,9 +77,10 @@ function moveItemOneStepDown() {
   const elementIndex = stack.value.length - 1
   const element = stack.value[elementIndex]
   const itemInNextColumnExists = !!getShapeInColumn(element?.xPosition, element?.yPosition + 1)
-  const elementHasReachedItsEnd = element.yPosition >= numOfYCells - element.verticalSpace
+  const elementHasReachedItsEnd = element.yPosition >= numOfYCells - 1
+  const itemTwoColumnsBelowIsDoubleSized = getShapeInColumn(element?.xPosition, element?.yPosition + 2)?.verticalSpace === 2
 
-  if (elementHasReachedItsEnd || itemInNextColumnExists || element.hasLanded) {
+  if (elementHasReachedItsEnd || itemInNextColumnExists || itemTwoColumnsBelowIsDoubleSized || element.hasLanded) {
     clearInterval(interval)
     element.hasLanded = true
   }
@@ -133,7 +139,13 @@ onMounted(() => {
         <div
           v-if="getShapeInColumn(xIndex, yIndex)"
           draggable="true"
-          :class="getShapeInColumn(xIndex, yIndex)?.shape"
+          :class="[getShapeInColumn(xIndex, yIndex)?.shape,
+                   {
+                     'negative-half-margin':
+                       getShapeInColumn(xIndex, yIndex)?.verticalSpace === 2
+                       && getShapeInColumn(xIndex, yIndex)?.rotationLevel !== 0,
+                   },
+          ]"
           :style="`transform: rotate(${getShapeInColumn(xIndex, yIndex)!.rotationLevel * 90}deg);`"
           @dragstart="startDrag($event, getShapeInColumn(xIndex, yIndex)?.shape!, xIndex, yIndex)"
         />
@@ -147,6 +159,10 @@ onMounted(() => {
   width: 60px;
   height: 60px;
   display: flex;
-  align-items: flex-start;
+  align-items: flex-end;
+}
+/* Hack to fix the transform bug */
+.negative-half-margin {
+  margin-bottom: -30px;
 }
 </style>

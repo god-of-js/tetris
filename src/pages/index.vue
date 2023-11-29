@@ -14,7 +14,7 @@ function refreshBoard() {
   <div class="mx-auto w-fit flex flex-col gap-8 md:flex-row">
     <TetrisShapes :shapes="shapes" @refresh-board="refreshBoard" />
     <div>
-      <TetrisBoard :key="boardKey" />
+      <TetrisBoard :key="boardKey" :shapes="shapes" />
 
       <a
         i-carbon-logo-github icon-btn
