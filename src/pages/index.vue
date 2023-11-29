@@ -2,26 +2,26 @@
 defineOptions({
   name: 'IndexPage',
 })
+// TODO: implement clear
 
 const shapes = ref(['triangle', 'rectangle', 'square'])
+const boardKey = ref(0)
+
+function refreshBoard() {
+  boardKey.value += 1
+}
 </script>
 
 <template>
-  <div class="mx-auto mb-20 md:w-65%">
-    <div class="mb-8 flex items-center gap-2">
-      <div i-carbon-campsite text-xl />
-      <span>Tetris</span>
-    </div>
-    <div class="mx-auto flex flex-col gap-8 md:flex-row">
-      <TetrisShapes :shapes="shapes" />
-      <TetrisBoard />
-    </div>
+  <div class="mx-auto w-fit flex flex-col gap-8 md:flex-row">
+    <TetrisShapes :shapes="shapes" @refresh-board="refreshBoard" />
+    <TetrisBoard :key="boardKey" />
   </div>
 </template>
 
 <style>
 .triangle {
-  border-bottom: 60px solid blue;
+  border-bottom: 60px solid #00FFFF;
   border-right: 60px solid transparent;
   width: 0;
   height: 0;
@@ -30,12 +30,13 @@ const shapes = ref(['triangle', 'rectangle', 'square'])
 .rectangle {
   height: 120px;
   width: 60px;
-  background: red;
+  background: linear-gradient(to right, #00FFFF, #FFD700);
+
 }
 
 .square {
   width: 60px;
   height: 60px;
-  background: yellow;
+  background: linear-gradient(to right, #FFD700, #FF4500);
 }
 </style>
