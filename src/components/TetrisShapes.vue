@@ -17,7 +17,7 @@ function startDrag(event: DragEvent, shape: string) {
 <template>
   <div class="grid h-fit gap-4 align-start">
     <TheButton class="h-fit" @click="emit('refresh-board')">
-      Clear
+      Refresh Board
     </TheButton>
     <div v-for="shape in props.shapes" :key="shape" :class="shape" draggable="true" @dragstart="startDrag($event, shape)" />
   </div>
