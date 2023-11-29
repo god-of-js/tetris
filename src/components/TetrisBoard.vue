@@ -78,7 +78,8 @@ function moveItemOneStepDown() {
   const element = stack.value[elementIndex]
   const itemInNextColumnExists = !!getShapeInColumn(element?.xPosition, element?.yPosition + 1)
   const elementHasReachedItsEnd = element.yPosition >= numOfYCells - 1
-  const itemTwoColumnsBelowIsDoubleSized = getShapeInColumn(element?.xPosition, element?.yPosition + 2)?.verticalSpace === 2
+  const itemTwoColumnsBelow = getShapeInColumn(element?.xPosition, element?.yPosition + 2)
+  const itemTwoColumnsBelowIsDoubleSized = itemTwoColumnsBelow?.verticalSpace === 2 && itemTwoColumnsBelow.rotationLevel === 0
 
   if (elementHasReachedItsEnd || itemInNextColumnExists || itemTwoColumnsBelowIsDoubleSized || element.hasLanded) {
     clearInterval(interval)
@@ -148,7 +149,9 @@ onMounted(() => {
           ]"
           :style="`transform: rotate(${getShapeInColumn(xIndex, yIndex)!.rotationLevel * 90}deg);`"
           @dragstart="startDrag($event, getShapeInColumn(xIndex, yIndex)?.shape!, xIndex, yIndex)"
-        />
+        >
+          {{ xIndex }}
+        </div>
       </div>
     </div>
   </div>
@@ -160,9 +163,10 @@ onMounted(() => {
   height: 60px;
   display: flex;
   align-items: flex-end;
+  justify-content: flex-start;
 }
-/* Hack to fix the transform bug */
 .negative-half-margin {
   margin-bottom: -30px;
+  margin-left: -30px;
 }
 </style>
