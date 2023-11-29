@@ -5,7 +5,6 @@ interface Shape {
   xPosition: number
   rotationLevel: number
   hasLanded: boolean
-  // TODO: handle items that are bigger than one column
   verticalSpace?: number
   horizontalSpace?: number
 }

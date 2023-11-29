@@ -2,8 +2,6 @@
 defineOptions({
   name: 'IndexPage',
 })
-// TODO: implement clear
-
 const shapes = ref(['triangle', 'rectangle', 'square'])
 const boardKey = ref(0)
 
@@ -15,7 +13,18 @@ function refreshBoard() {
 <template>
   <div class="mx-auto w-fit flex flex-col gap-8 md:flex-row">
     <TetrisShapes :shapes="shapes" @refresh-board="refreshBoard" />
-    <TetrisBoard :key="boardKey" />
+    <div>
+      <TetrisBoard :key="boardKey" />
+
+      <a
+        i-carbon-logo-github icon-btn
+        rel="noreferrer"
+        href="https://github.com/god-of-js/tetris"
+        target="_blank"
+        title="GitHub"
+        class="mx-auto mt-4 text-xl"
+      />
+    </div>
   </div>
 </template>
 
