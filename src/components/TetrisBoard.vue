@@ -110,6 +110,8 @@ function changeRotation(nextRotation: 1 | -1) {
 
 function initKeyboardControls() {
   document.addEventListener('keydown', (event) => {
+    if (!stack.value[stack.value.length - 1] || stack.value[stack.value.length - 1].hasLanded)
+      return
     if (event.code === 'ArrowLeft')
       changeItemHorizontalPosition(-1)
 
