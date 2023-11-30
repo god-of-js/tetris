@@ -9,7 +9,6 @@ interface Shape {
   rotationLevel: number
   hasLanded: boolean
   verticalSpace: number
-  horizontalSpace: number
 }
 
 const props = defineProps<Props>()
@@ -53,8 +52,6 @@ function receiveShape(event: DragEvent, yIndex: number, xIndex: number) {
     rotationLevel: 0,
     hasLanded: false,
     verticalSpace: shape === 'rectangle' ? 2 : 1,
-    // TODO: check if this variable is needed
-    horizontalSpace: shape === 'rectangle' ? 2 : 1,
   })
 
   if (prevYIndex && prevXIndex)
@@ -84,9 +81,19 @@ function moveItemOneStepDown() {
   const itemInNextColumnExists = !!getShapeInColumn(element?.xPosition, element?.yPosition + 1)
   const elementHasReachedItsEnd = element.yPosition >= numOfYCells - 1
   const itemTwoColumnsBelow = getShapeInColumn(element?.xPosition, element?.yPosition + 2)
+  const itemAtRightBelow = getShapeInColumn(element?.xPosition + 1, element?.yPosition + 1)
+  const itemAtRightBelowIsDoubleSizedAndRotated
+  = itemAtRightBelow
+    ? itemAtRightBelow.verticalSpace === 2 && ![0, 2].includes(itemAtRightBelow.rotationLevel)
+    : false
   const itemTwoColumnsBelowIsDoubleSized = itemTwoColumnsBelow?.verticalSpace === 2 && itemTwoColumnsBelow.rotationLevel === 0
 
-  if (elementHasReachedItsEnd || itemInNextColumnExists || itemTwoColumnsBelowIsDoubleSized || element.hasLanded) {
+  if (
+    elementHasReachedItsEnd
+    || itemInNextColumnExists
+    || itemTwoColumnsBelowIsDoubleSized
+    || element.hasLanded
+    || itemAtRightBelowIsDoubleSizedAndRotated) {
     clearInterval(interval)
     element.hasLanded = true
   }
@@ -105,6 +112,15 @@ function changeRotation(nextRotation: 1 | -1) {
   if (element.hasLanded)
     return
 
+  const elementIsDoublesizedAndAtTheEdge = (element.xPosition === 0) && element.verticalSpace === 2 && element.rotationLevel !== 0
+  if (elementIsDoublesizedAndAtTheEdge)
+    element.xPosition += 1
+
+  if (element.verticalSpace === 2) {
+    element.rotationLevel = element.rotationLevel === 0 ? 1 : 0
+    return
+  }
+
   if (element.rotationLevel >= 3 && nextRotation === 1) {
     // Restart rotation if it has reached it's end
     element.rotationLevel = 0
@@ -114,9 +130,6 @@ function changeRotation(nextRotation: 1 | -1) {
   }
   else {
     element.rotationLevel += nextRotation
-    const elementIsDoublesizedAndAtTheEdge = (element.xPosition === 0) && element.verticalSpace === 2 && element.rotationLevel !== 0
-    if (elementIsDoublesizedAndAtTheEdge)
-      element.xPosition += 1
   }
 }
 
@@ -163,6 +176,7 @@ onMounted(() => {
           ]"
           :style="`transform: rotate(${getShapeInColumn(xIndex, yIndex)!.rotationLevel * 90}deg);`"
           @dragstart="startDrag($event, getShapeInColumn(xIndex, yIndex)?.shape!, xIndex, yIndex)"
+          v-text="getShapeInColumn(xIndex, yIndex)!.rotationLevel"
         />
       </div>
     </div>
