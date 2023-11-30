@@ -41,10 +41,14 @@ function receiveShape(event: DragEvent, yIndex: number, xIndex: number) {
     alert('The last item needs to land before we proceed')
     return
   }
+  let yPosition = yIndex
+  if (shape === 'rectangle' && yIndex === 0)
+    yPosition = 1
+
   stack.value.push({
     shape,
     xPosition: xIndex,
-    yPosition: yIndex,
+    yPosition,
     rotationLevel: 0,
     hasLanded: false,
     verticalSpace: shape === 'rectangle' ? 2 : 1,
