@@ -17,8 +17,8 @@
 
     <ul class="list-disc p-4">
       <li>Drag a shape into any column of choice</li>
-      <li>Use <span i-carbon-caret-left /> and <span i-carbon-caret-right /> to change horizontal columns</li>
-      <li>Use <span i-carbon-caret-up /> and <span i-carbon-caret-down /> to rotate the shape</li>
+      <li>Use the Left  and Right directions on your keyboard to change horizontal columns</li>
+      <li>Use Up and Down directions on your keyboard to rotate the shape</li>
       <li>If you are not comforrtable with the position of the shape when it has landed, drag it to any other column of choice and manipulate again</li>
     </ul>
 
