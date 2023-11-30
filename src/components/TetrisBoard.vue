@@ -176,7 +176,6 @@ onMounted(() => {
           ]"
           :style="`transform: rotate(${getShapeInColumn(xIndex, yIndex)!.rotationLevel * 90}deg);`"
           @dragstart="startDrag($event, getShapeInColumn(xIndex, yIndex)?.shape!, xIndex, yIndex)"
-          v-text="getShapeInColumn(xIndex, yIndex)!.rotationLevel"
         />
       </div>
     </div>

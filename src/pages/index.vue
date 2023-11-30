@@ -25,6 +25,7 @@ function refreshBoard() {
         class="mx-auto mt-4 text-xl"
       />
     </div>
+    <HowToPlay />
   </div>
 </template>
 
