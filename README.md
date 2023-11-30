@@ -16,9 +16,7 @@ For ease and to avoid dependency issues, use `pnpm` for all operations.
 To install the dependencies, use the command
 
 ```
-
 pnpm install
-
 ```
 
 ### Run on Local host
@@ -26,9 +24,7 @@ pnpm install
 To Run the project on localhost on the port 3333
 
 ```
-
 pnpm dev
-
 ```
 
 ### Unit Test
@@ -36,9 +32,7 @@ pnpm dev
 To test the project using vitest use the command
 
 ```
-
 pnpm test
-
 ```
 
 ## Upcoming Features
