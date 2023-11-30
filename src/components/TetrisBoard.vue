@@ -38,6 +38,7 @@ function receiveShape(event: DragEvent, yIndex: number, xIndex: number) {
     return
   }
   if (!!stack.value[stack.value.length - 1] && !stack.value[stack.value.length - 1]?.hasLanded) {
+    // eslint-disable-next-line no-alert
     alert('The last item needs to land before we proceed')
     return
   }
@@ -103,13 +104,20 @@ function changeRotation(nextRotation: 1 | -1) {
 
   if (element.hasLanded)
     return
-  // Restart rotation if it has reached it's end
-  if (element.rotationLevel >= 3 && nextRotation === 1)
+
+  if (element.rotationLevel >= 3 && nextRotation === 1) {
+    // Restart rotation if it has reached it's end
     element.rotationLevel = 0
-  else if (element.rotationLevel === 0 && nextRotation === -1)
+  }
+  else if (element.rotationLevel === 0 && nextRotation === -1) {
     element.rotationLevel = 3
-  else
+  }
+  else {
     element.rotationLevel += nextRotation
+    const elementIsDoublesizedAndAtTheEdge = (element.xPosition === 0) && element.verticalSpace === 2 && element.rotationLevel !== 0
+    if (elementIsDoublesizedAndAtTheEdge)
+      element.xPosition += 1
+  }
 }
 
 function initKeyboardControls() {
